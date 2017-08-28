@@ -86,13 +86,27 @@ function renderPlayScreen() {
    event.preventDefault();
     $('.Start-Page').addClass("hidden");
     $('.Game-Board').removeClass('hidden');
+    handleFlipButtonClick();
+    //handleWarButtonClick();
 }
 
+function handleFlipButtonClick() {
+   $('.flip-button').on('click', function(event){
+    event.preventDefault();
+    flipComputerCard(deck1);
+    flipPlayerCard(deck2);
+  });  
+}
 
+function flipComputerCard(pile) {
+  const display = showCard(pile.shift());
+  $('.Computer-Play').html(display);
+}
 
-
-
-
+function flipPlayerCard(pile) {
+  const display = showCard(pile.shift());
+  $('.Player-Play').html(display);
+}
 
 
 

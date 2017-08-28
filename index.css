@@ -7,8 +7,14 @@
 }
 
 img {
+  display: inline-block;
   border: 1px solid #ddd;
   border-radius: 4px;
+  margin: 0;
   padding: 0;
   height: 100px;
+}
+
+button {
+  display: inline-block;
 }
