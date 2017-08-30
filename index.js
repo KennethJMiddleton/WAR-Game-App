@@ -18,10 +18,14 @@ const cardsUrl = 'https://deckofcardsapi.com/api/deck/new/draw/?count=52';
 var fullDeck = [];
 var deck1 = [];
 var deck2 = [];
+var cValue = 0;
+var pValue = 0;
+var cCard;
+var pCArd;
+var warCards = [];
 
 function start() {
   $('.start-button').on('click', event => {
-    event.preventDefault();
     getDeck(data => {
       fixDeck(data);
       //console.log('deck :',fullDeck);
@@ -83,40 +87,108 @@ function splitDeck(deck) {
 }
 
 function renderPlayScreen() {
-   event.preventDefault();
     $('.Start-Page').addClass("hidden");
     $('.Game-Board').removeClass('hidden');
+    $('.C-Counter').html(deck1.length);
+    $('.P-Counter').html(deck2.length);
     handleFlipButtonClick();
-    //handleWarButtonClick();
+    handleWarButtonClick();
 }
 
 function handleFlipButtonClick() {
-   $('.flip-button').on('click', function(event){
-    event.preventDefault();
+   $('.Flip-Button').on('click', function(event){
     flipComputerCard(deck1);
     flipPlayerCard(deck2);
+    evaluate();
   });  
 }
 
 function flipComputerCard(pile) {
+  cValue = pile[0].value;
+  cCard = pile[0];
   const display = showCard(pile.shift());
   $('.Computer-Play').html(display);
 }
 
 function flipPlayerCard(pile) {
+  pValue = pile[0].value;
+  pCard = pile[0];
   const display = showCard(pile.shift());
   $('.Player-Play').html(display);
 }
 
+function evaluate() {
+  if (cValue === pValue) {
+    $('.C-Status').html("TIE");
+    $('.P-Status').html("TIE");
+    instigate();
+  }
+  else if (cValue > pValue) {
+    $('.C-Status').html("WINNER");
+    $('.P-Status').html("");
+    deck1.push(cCard);
+    deck1.push(pCard);
+  }
+  else {
+    $('.P-Status').html("WINNER");
+    $('.C-Status').html("");
+    deck2.push(cCard);
+    deck2.push(pCard);
+  }
+  $('.C-Counter').html(deck1.length);
+  $('.P-Counter').html(deck2.length);
+}
 
+function instigate () {
+  $('.Flip-Button').addClass("hidden");
+  $('.War-Button').removeClass('hidden');
+}
 
+function handleWarButtonClick() {
+  $('.War-Button').on('click', function(event) {
+    warCards.push(deck1.shift());
+    warCards.push(deck2.shift());
+    console.log('down cards:',warCards);
+    flipComputerCard(deck1);
+    flipPlayerCard(deck2);
+    evaluateWAR();
+  });
+    
+}
 
+function evaluateWAR() {
+  if (cValue === pValue) {
+    $('.C-Status').html("THE WAR CONTINUES");
+    $('.P-Status').html("THE WAR CONTINUES");
+    instigate();
+  }
+  else if (cValue > pValue) {
+    $('.C-Status').html("WINNER");
+    $('.P-Status').html("");
+    deck1.push(warCards);
+    warCards = [];
+    deck1.push(cCard);
+    deck1.push(pCard);
+    console.log(deck1);
+  }
+  else {
+    $('.P-Status').html("WINNER");
+    $('.C-Status').html("");
+    deck2.push(warCards);
+    warCards = [];
+    deck2.push(cCard);
+    deck2.push(pCard);
+    console.log(deck2);
+  }
+  deescalate();
+  $('.C-Counter').html(deck1.length);
+  $('.P-Counter').html(deck2.length);
+}
 
-
-
-
-
-
+function deescalate() {
+  $('.War-Button').addClass("hidden");
+  $('.Flip-Button').removeClass('hidden');
+}
 
 function showCard(data) {
   console.log('showCard: ', data);
