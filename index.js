@@ -1,19 +1,4 @@
 const cardsUrl = 'https://deckofcardsapi.com/api/deck/new/draw/?count=52';
-/*const CARD_VALUES = {
-  '2': 2,
-  '3': 3,
-  '4': 4,
-  '5': 5,
-  '6': 6,
-  '7': 7,
-  '8': 8,
-  '9': 9,
-  '10': 10,
-  'JACK': 11,
-  'QUEEN': 12,
-  'KING': 13,
-  'ACE': 14
-};*/
 
 var fullDeck = [];
 var deck1 = [];
@@ -100,6 +85,7 @@ function handleFlipButtonClick() {
     flipComputerCard(deck1);
     flipPlayerCard(deck2);
     evaluate();
+    winCondition();
   });  
 }
 
@@ -142,16 +128,20 @@ function evaluate() {
 function instigate () {
   $('.Flip-Button').addClass("hidden");
   $('.War-Button').removeClass('hidden');
+  warCards.push(cCard);
+  warCards.push(pCard);
 }
 
 function handleWarButtonClick() {
   $('.War-Button').on('click', function(event) {
     warCards.push(deck1.shift());
     warCards.push(deck2.shift());
+    winCondition();
     console.log('down cards:',warCards);
     flipComputerCard(deck1);
     flipPlayerCard(deck2);
     evaluateWAR();
+    winCondition();
   });
     
 }
@@ -165,7 +155,10 @@ function evaluateWAR() {
   else if (cValue > pValue) {
     $('.C-Status').html("WINNER");
     $('.P-Status').html("");
-    deck1.push(warCards);
+    deck1.push(warCards[0]);
+    deck1.push(warCards[1]);
+    deck1.push(warCards[2]);
+    deck1.push(warCards[3]);
     warCards = [];
     deck1.push(cCard);
     deck1.push(pCard);
@@ -174,7 +167,10 @@ function evaluateWAR() {
   else {
     $('.P-Status').html("WINNER");
     $('.C-Status').html("");
-    deck2.push(warCards);
+    deck2.push(warCards[0]);
+    deck2.push(warCards[1]);
+    deck2.push(warCards[2]);
+    deck2.push(warCards[3]);
     warCards = [];
     deck2.push(cCard);
     deck2.push(pCard);
@@ -190,8 +186,32 @@ function deescalate() {
   $('.Flip-Button').removeClass('hidden');
 }
 
+function winCondition() {
+  if (deck1.length === 0) {
+    playerWin();
+  }
+  else if (deck2.length === 0) {
+    computerWin();
+  }
+  else {}
+}
+
+function playerWin() {
+  $('.Flip-Button').addClass("hidden");
+  $('.War-Button').addClass("hidden");
+  $('.P-Status').html("ULTIMATE VICTOR!!!");
+  $('.C-Status').html("DEFEATED!!!");
+}
+
+function computerWin() {
+  $('.Flip-Button').addClass("hidden");
+  $('.War-Button').addClass("hidden");
+  $('.C-Status').html("ULTIMATE VICTOR!!!");
+  $('.P-Status').html("DEFEATED!!!");
+}
+
 function showCard(data) {
-  console.log('showCard: ', data);
+  //console.log('showCard: ', data);
   return `
     <div>
       <img src='${data.image}'/> 
@@ -199,11 +219,10 @@ function showCard(data) {
   `;
 }
 
-function showDeck(data) {
-  console.log('showDeck:', data);
+/* function showDeck(data) {
   const deck = data.cards.map((item, index) => showCard(item));
   $('.js-play-space').html(deck);
-}
+} */
 
 
 $(start);
